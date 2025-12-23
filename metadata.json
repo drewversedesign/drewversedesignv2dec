@@ -1,0 +1,9 @@
+{
+  "name": "DrewVerse Design - Digital Agency",
+  "description": "A high-end React-based digital agency website featuring AI-powered design consulting and a modern, responsive user experience.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}

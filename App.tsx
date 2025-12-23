@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { PROJECTS, SERVICES, NAV_LINKS } from './constants';
-import { AIDesignConsultant } from './components/AIDesignConsultant';
+import { PROJECTS, SERVICES, NAV_LINKS } from './constants.tsx';
+import { AIDesignConsultant } from './components/AIDesignConsultant.tsx';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

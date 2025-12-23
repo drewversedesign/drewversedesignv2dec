@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { GroundingSource } from "../types";
+import { GroundingSource } from "../types.ts";
 
 const SYSTEM_INSTRUCTION = `
 You are the DrewVerse AI Design Consultant and Research Assistant based in Kampala, Uganda.
@@ -23,7 +23,9 @@ export class GeminiService {
   private ai: GoogleGenAI;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    // Safe access to process.env to prevent ReferenceError in browser-only environments
+    const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+    this.ai = new GoogleGenAI({ apiKey: apiKey || "" });
   }
 
   async getChatResponse(message: string, useLocation: boolean = false): Promise<GeminiResponse> {

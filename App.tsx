@@ -536,6 +536,12 @@ const Footer: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: 'Select a service', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const encode = (data: any) => {
+    return Object.keys(data)
+      .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+      .join("&");
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -569,12 +575,22 @@ const Footer: React.FC = () => {
     if (!validate()) return;
     
     setFormState('loading');
-    // Mock API call
-    setTimeout(() => {
+
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: encode({ "form-name": "contact", ...formData })
+    })
+    .then(() => {
       setFormState('success');
       setFormData({ name: '', email: '', phone: '', service: 'Select a service', message: '' });
       setTimeout(() => setFormState('idle'), 5000);
-    }, 1500);
+    })
+    .catch(error => {
+      setFormState('error');
+      console.error(error);
+      setTimeout(() => setFormState('idle'), 5000);
+    });
   };
 
   return (
@@ -596,7 +612,19 @@ const Footer: React.FC = () => {
           </div>
           <div className="bg-[#121212] p-8 rounded-2xl border border-gray-800">
             <h3 className="text-xl font-bold uppercase display-font mb-6">Request A Consultation</h3>
-            <form className="space-y-5" onSubmit={handleFormSubmit}>
+            <form 
+              className="space-y-5" 
+              onSubmit={handleFormSubmit}
+              name="contact"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+            >
+              {/* Netlify Hidden Fields */}
+              <input type="hidden" name="form-name" value="contact" />
+              <p className="hidden">
+                <label>Don’t fill this out if you’re human: <input name="bot-field" /></label>
+              </p>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField 
                   name="name" 
@@ -660,13 +688,15 @@ const Footer: React.FC = () => {
               </div>
               <button 
                 disabled={formState === 'loading'}
-                className={`w-full ${formState === 'success' ? 'bg-green-600' : 'bg-primary hover:bg-primary-hover'} text-white py-3 rounded text-sm font-bold uppercase tracking-wide transition-all duration-300 transform hover:scale-[1.03] hover:shadow-2xl active:scale-95 flex items-center justify-center gap-2`} 
+                className={`w-full ${formState === 'success' ? 'bg-green-600' : formState === 'error' ? 'bg-red-600' : 'bg-primary hover:bg-primary-hover'} text-white py-3 rounded text-sm font-bold uppercase tracking-wide transition-all duration-300 transform hover:scale-[1.03] hover:shadow-2xl active:scale-95 flex items-center justify-center gap-2`} 
                 type="submit"
               >
                 {formState === 'loading' ? (
                   <>Processing <span className="animate-spin material-symbols-outlined text-sm">autorenew</span></>
                 ) : formState === 'success' ? (
                   <>Message Sent! <span className="material-symbols-outlined text-sm">check_circle</span></>
+                ) : formState === 'error' ? (
+                  <>Error Occurred <span className="material-symbols-outlined text-sm">error</span></>
                 ) : (
                   <>Send Message <span className="material-symbols-outlined text-sm">send</span></>
                 )}

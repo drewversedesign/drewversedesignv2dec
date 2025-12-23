@@ -533,7 +533,14 @@ const Process: React.FC = () => {
 
 const Footer: React.FC = () => {
   const [formState, setFormState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: 'Select a service', message: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    service: 'Select a service', 
+    message: '',
+    'bot-field': '' // Added honeypot field to state
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const encode = (data: any) => {
@@ -576,15 +583,20 @@ const Footer: React.FC = () => {
     
     setFormState('loading');
 
+    // POST specifically to "/" for Netlify Forms identification
     fetch("/", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: encode({ "form-name": "contact", ...formData })
     })
-    .then(() => {
-      setFormState('success');
-      setFormData({ name: '', email: '', phone: '', service: 'Select a service', message: '' });
-      setTimeout(() => setFormState('idle'), 5000);
+    .then(response => {
+      if (response.ok) {
+        setFormState('success');
+        setFormData({ name: '', email: '', phone: '', service: 'Select a service', message: '', 'bot-field': '' });
+        setTimeout(() => setFormState('idle'), 5000);
+      } else {
+        throw new Error('Form submission failed');
+      }
     })
     .catch(error => {
       setFormState('error');
@@ -619,10 +631,13 @@ const Footer: React.FC = () => {
               data-netlify="true"
               netlify-honeypot="bot-field"
             >
-              {/* Netlify Hidden Fields */}
+              {/* Netlify Hidden Fields required for AJAX handling */}
               <input type="hidden" name="form-name" value="contact" />
               <p className="hidden">
-                <label>Don’t fill this out if you’re human: <input name="bot-field" /></label>
+                <label>
+                  Don’t fill this out if you’re human: 
+                  <input name="bot-field" value={formData['bot-field']} onChange={handleInputChange} />
+                </label>
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
   // Track active section for nav highlighting
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'portfolio', 'services', 'pricing', 'contact'];
+      const sections = ['home', 'about', 'portfolio', 'services', 'faq', 'pricing', 'contact'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -354,6 +354,83 @@ const Services: React.FC = () => {
               </button>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border-b border-subtle-light dark:border-subtle-dark">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full py-6 flex items-center justify-between text-left group transition-all duration-300"
+      >
+        <span className={`text-sm md:text-base font-bold uppercase display-font tracking-wide transition-colors duration-300 ${isOpen ? 'text-primary' : 'text-gray-900 dark:text-white group-hover:text-primary'}`}>
+          {question}
+        </span>
+        <span className={`material-symbols-outlined transition-transform duration-500 text-primary ${isOpen ? 'rotate-180' : ''}`}>
+          {isOpen ? 'remove' : 'add'}
+        </span>
+      </button>
+      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[300px] mb-6' : 'max-h-0'}`}>
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed pr-8">
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const FAQ: React.FC = () => {
+  const faqs = [
+    {
+      question: "How long does a typical website project take?",
+      answer: "A standard business website typically takes 2–4 weeks from discovery to deployment. More complex projects, like custom e-commerce or full branding suites, can take 6–8 weeks depending on the scope and number of revisions required."
+    },
+    {
+      question: "What are your payment terms for digital services?",
+      answer: "We typically operate on a milestone-based payment structure: 50% upfront to initiate the project and 50% upon successful deployment. For long-term growth partners, we offer flexible monthly or annual retainer plans as seen in our pricing section."
+    },
+    {
+      question: "Do you offer post-launch support and maintenance?",
+      answer: "Absolutely. We don't just build and leave. All our packages include a post-launch support window. Our Professional and Enterprise plans include dedicated monthly maintenance to ensure your platform stays secure and high-performing."
+    },
+    {
+      question: "Why should a Ugandan startup choose DrewVerse?",
+      answer: "We understand the local market dynamics in Kampala and beyond. We combine international design standards with a deep understanding of local user behavior, providing affordable yet world-class digital solutions that help startups compete globally."
+    },
+    {
+      question: "Can you help migrate my existing site to a new platform?",
+      answer: "Yes, we specialize in seamless migrations. Whether you're moving from a legacy system to a modern CMS or a custom React application, we handle the data, SEO preservation, and infrastructure setup with zero downtime."
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-white dark:bg-background-dark" id="faq">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-4 space-y-6">
+            <div className="inline-block px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-800 bg-gray-100 dark:bg-black/40 text-xs font-semibold tracking-wider uppercase text-gray-600 dark:text-gray-400">
+              Assistance
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold display-font uppercase text-gray-900 dark:text-white leading-tight">
+              Frequently <br/> Asked <br/> <span className="text-primary">Questions</span>
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-sm">
+              Can't find the answer you're looking for? Feel free to reach out to our team via the contact form or consult our AI agent below.
+            </p>
+          </div>
+          <div className="lg:col-span-8">
+            <div className="bg-gray-50/50 dark:bg-surface-dark/30 rounded-2xl p-4 md:p-8 border border-subtle-light dark:border-subtle-dark">
+              {faqs.map((faq, index) => (
+                <FAQItem key={index} question={faq.question} answer={faq.answer} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -813,8 +890,9 @@ const App: React.FC = () => {
       <Hero />
       <Portfolio />
       <Services />
-      <Pricing />
       <Process />
+      <FAQ />
+      <Pricing />
       <Footer />
       <AIDesignConsultant />
     </div>
